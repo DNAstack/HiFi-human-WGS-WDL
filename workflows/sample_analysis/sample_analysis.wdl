@@ -18,6 +18,7 @@ workflow sample_analysis {
 
 		String deepvariant_version
 		DeepVariantModel? deepvariant_model
+		String backend
 
 		RuntimeAttributes default_runtime_attributes
 	}
@@ -57,6 +58,7 @@ workflow sample_analysis {
 			reference_name = reference.name,
 			deepvariant_version = deepvariant_version,
 			deepvariant_model = deepvariant_model,
+			backend = backend,
 			default_runtime_attributes = default_runtime_attributes
 	}
 

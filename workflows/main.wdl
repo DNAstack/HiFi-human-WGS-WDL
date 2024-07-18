@@ -49,6 +49,7 @@ workflow humanwgs {
 				reference = reference,
 				deepvariant_version = deepvariant_version,
 				deepvariant_model = deepvariant_model,
+				backend = backend,
 				default_runtime_attributes = default_runtime_attributes
 		}
 	}
