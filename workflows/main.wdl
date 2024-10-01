@@ -100,8 +100,6 @@ workflow humanwgs {
 
 		# per movie stats, alignments
 		Array[Array[File]] bam_stats = sample_analysis.bam_stats
-		Array[Array[File]] read_length_summary = sample_analysis.read_length_summary
-		Array[Array[File]] read_quality_summary = sample_analysis.read_quality_summary
 
 		# per sample small variant calls
 		Array[IndexData] small_variant_gvcfs = sample_analysis.small_variant_gvcf

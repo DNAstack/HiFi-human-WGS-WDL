@@ -3,6 +3,7 @@ version 1.0
 # Run for each sample in the cohort. Aligns reads from each movie to the reference genome, then calls and phases small and structural variants.
 
 import "../humanwgs_structs.wdl"
+import "../wdl-common/wdl/tasks/pbmm2.wdl" as Pbmm2Align
 import "../wdl-common/wdl/tasks/pbsv_discover.wdl" as PbsvDiscover
 import "../wdl-common/wdl/workflows/deepvariant/deepvariant.wdl" as DeepVariant
 import "../wdl-common/wdl/tasks/mosdepth.wdl" as Mosdepth
@@ -26,13 +27,13 @@ workflow sample_analysis {
 	Array[Array[String]] pbsv_splits = read_json(reference.pbsv_splits)
 
 	scatter (movie_bam in sample.movie_bams) {
-		call pbmm2_align {
+		call Pbmm2Align.pbmm2_align_wgs as pbmm2_align {
 			input:
 				sample_id = sample.sample_id,
 				bam = movie_bam,
-				reference = reference.fasta.data,
-				reference_index = reference.fasta.data_index,
-				reference_name = reference.name,
+				ref_fasta = reference.fasta.data,
+				ref_index = reference.fasta.data_index,
+				ref_name = reference.name,
 				runtime_attributes = default_runtime_attributes
 		}
 
@@ -199,8 +200,6 @@ workflow sample_analysis {
 	output {
 		# per movie stats, alignments, and svsigs
 		Array[File] bam_stats = pbmm2_align.bam_stats
-		Array[File] read_length_summary = pbmm2_align.read_length_summary
-		Array[File] read_quality_summary = pbmm2_align.read_quality_summary
 		Array[IndexData] aligned_bams = aligned_bam
 		Array[File] svsigs = pbsv_discover.svsig
 
@@ -248,87 +247,6 @@ workflow sample_analysis {
 		deepvariant_version: {help: "Version of deepvariant to use"}
 		deepvariant_model: {help: "Optional deepvariant model file to use"}
 		default_runtime_attributes: {help: "Default RuntimeAttributes; spot if preemptible was set to true, otherwise on_demand"}
-	}
-}
-
-task pbmm2_align {
-	input {
-		String sample_id
-		File bam
-
-		File reference
-		File reference_index
-		String reference_name
-
-		RuntimeAttributes runtime_attributes
-	}
-
-	String movie = basename(bam, ".bam")
-
-	Int threads = 24
-	Int mem_gb = ceil(threads * 4)
-	Int disk_size = ceil((size(bam, "GB") + size(reference, "GB")) * 4 + 20)
-
-	command <<<
-		set -euo pipefail
-
-		pbmm2 --version
-
-		pbmm2 align \
-			--num-threads ~{threads} \
-			--sort-memory 4G \
-			--preset HIFI \
-			--sample ~{sample_id} \
-			--log-level INFO \
-			--sort \
-			--unmapped \
-			~{reference} \
-			~{bam} \
-			~{sample_id}.~{movie}.~{reference_name}.aligned.bam
-
-		# movie stats
-		extract_read_length_and_qual.py \
-			~{bam} \
-		> ~{sample_id}.~{movie}.read_length_and_quality.tsv
-
-		awk '{{ b=int($2/1000); b=(b>39?39:b); print 1000*b "\t" $2; }}' \
-			~{sample_id}.~{movie}.read_length_and_quality.tsv \
-			| sort -k1,1g \
-			| datamash -g 1 count 1 sum 2 \
-			| awk 'BEGIN {{ for(i=0;i<=39;i++) {{ print 1000*i"\t0\t0"; }} }} {{ print; }}' \
-			| sort -k1,1g \
-			| datamash -g 1 sum 2 sum 3 \
-		> ~{sample_id}.~{movie}.read_length_summary.tsv
-
-		awk '{{ print ($3>50?50:$3) "\t" $2; }}' \
-				~{sample_id}.~{movie}.read_length_and_quality.tsv \
-			| sort -k1,1g \
-			| datamash -g 1 count 1 sum 2 \
-			| awk 'BEGIN {{ for(i=0;i<=60;i++) {{ print i"\t0\t0"; }} }} {{ print; }}' \
-			| sort -k1,1g \
-			| datamash -g 1 sum 2 sum 3 \
-		> ~{sample_id}.~{movie}.read_quality_summary.tsv
-	>>>
-
-	output {
-		File aligned_bam = "~{sample_id}.~{movie}.~{reference_name}.aligned.bam"
-		File aligned_bam_index = "~{sample_id}.~{movie}.~{reference_name}.aligned.bam.bai"
-		File bam_stats = "~{sample_id}.~{movie}.read_length_and_quality.tsv"
-		File read_length_summary = "~{sample_id}.~{movie}.read_length_summary.tsv"
-		File read_quality_summary = "~{sample_id}.~{movie}.read_quality_summary.tsv"
-	}
-
-	runtime {
-		docker: "~{runtime_attributes.container_registry}/pbmm2@sha256:1013aa0fd5fb42c607d78bfe3ec3d19e7781ad3aa337bf84d144c61ed7d51fa1"
-		cpu: threads
-		memory: mem_gb + " GB"
-		disk: disk_size + " GB"
-		disks: "local-disk " + disk_size + " HDD"
-		preemptible: runtime_attributes.preemptible_tries
-		maxRetries: runtime_attributes.max_retries
-		awsBatchRetryAttempts: runtime_attributes.max_retries
-		queueArn: runtime_attributes.queue_arn
-		zones: runtime_attributes.zones
 	}
 }
 
