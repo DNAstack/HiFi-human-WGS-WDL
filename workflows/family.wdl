@@ -172,7 +172,7 @@ workflow humanwgs_family {
   Map[String, Array[String]] stats = {
     'sample_id': sample_id,
     'num_reads': upstream.stat_num_reads,
-    'read_length_min': upstream.stat_read_length_mean,
+    'read_length_mean': upstream.stat_read_length_mean,
     'read_length_median': upstream.stat_read_length_median,
     'read_quality_mean': upstream.stat_read_quality_mean,
     'read_quality_median': upstream.stat_read_quality_median,
@@ -400,6 +400,6 @@ workflow humanwgs_family {
 
     # workflow metadata
     String workflow_name    = "humanwgs_family"
-    String workflow_version = "v2.0.0~{"-" + debug_version}"
+    String workflow_version = "v2.0.3~{"-" + debug_version}"
   }
 }
