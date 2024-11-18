@@ -247,7 +247,7 @@ workflow humanwgs_family {
         id                 = family.family_id,
         family             = family,
         phenotypes         = phenotypes,
-        disk_size          = size(flatten(hifi_reads), "GB") + 10,
+        disk_size          = ceil(size(flatten(hifi_reads), "GB")) + 10,
         runtime_attributes = default_runtime_attributes
     }
 
@@ -400,6 +400,6 @@ workflow humanwgs_family {
 
     # workflow metadata
     String workflow_name    = "humanwgs_family"
-    String workflow_version = "v2.0.4" + if defined(debug_version) then "~{"-" + debug_version}" else ""
+    String workflow_version = "v2.0.5" + if defined(debug_version) then "~{"-" + debug_version}" else ""
   }
 }
