@@ -63,6 +63,9 @@ workflow upstream {
 
     Boolean gpu
 
+    Int? pbmm2_align_wgs_override_mem_gb
+    Int? merge_bam_stats_override_mem_gb
+
     RuntimeAttributes default_runtime_attributes
   }
 
@@ -71,12 +74,13 @@ workflow upstream {
   scatter (hifi_read_bam in hifi_reads) {
     call Pbmm2.pbmm2_align_wgs as pbmm2_align {
       input:
-        sample_id          = sample_id,
-        bam                = hifi_read_bam,
-        ref_fasta          = ref_map["fasta"],       # !FileCoercion
-        ref_index          = ref_map["fasta_index"], # !FileCoercion
-        ref_name           = ref_map["name"],
-        runtime_attributes = default_runtime_attributes
+        sample_id                       = sample_id,
+        bam                             = hifi_read_bam,
+        ref_fasta                       = ref_map["fasta"],       # !FileCoercion
+        ref_index                       = ref_map["fasta_index"], # !FileCoercion
+        ref_name                        = ref_map["name"],
+        pbmm2_align_wgs_override_mem_gb = pbmm2_align_wgs_override_mem_gb,
+        runtime_attributes              = default_runtime_attributes
     }
     call Pbsv.pbsv_discover {
       input:
@@ -89,9 +93,10 @@ workflow upstream {
 
   call MergeBamStats.merge_bam_stats {
     input:
-      sample_id            = sample_id,
-      bam_stats            = pbmm2_align.bam_stats,
-      runtime_attributes   = default_runtime_attributes
+      sample_id                       = sample_id,
+      bam_stats                       = pbmm2_align.bam_stats,
+      merge_bam_stats_override_mem_gb = merge_bam_stats_override_mem_gb,
+      runtime_attributes              = default_runtime_attributes
   }
 
   # merge aligned bams if there are multiple

@@ -72,6 +72,9 @@ workflow downstream {
 
     File ref_map_file
 
+    Int? hiphase_override_mem_gb
+    Int? pbstarphase_diplotype_override_mem_gb
+
     RuntimeAttributes default_runtime_attributes
   }
 
@@ -88,17 +91,18 @@ workflow downstream {
 
   call Hiphase.hiphase {
     input: 
-      sample_id              = sample_id,
-      vcfs                   = hiphase_input_vcfs,
-      vcf_indices            = hiphase_input_vcf_indices,
-      phased_vcf_names       = phased_vcf_name,
-      phased_vcf_index_names = phased_vcf_index_name,
-      aligned_bam            = aligned_bam,
-      aligned_bam_index      = aligned_bam_index,
-      ref_name               = ref_map["name"],
-      ref_fasta              = ref_map["fasta"],          # !FileCoercion
-      ref_index              = ref_map["fasta_index"],    # !FileCoercion
-      runtime_attributes     = default_runtime_attributes
+      sample_id                             = sample_id,
+      vcfs                                  = hiphase_input_vcfs,
+      vcf_indices                           = hiphase_input_vcf_indices,
+      phased_vcf_names                      = phased_vcf_name,
+      phased_vcf_index_names                = phased_vcf_index_name,
+      aligned_bam                           = aligned_bam,
+      aligned_bam_index                     = aligned_bam_index,
+      ref_name                              = ref_map["name"],
+      ref_fasta                             = ref_map["fasta"],          # !FileCoercion
+      ref_index                             = ref_map["fasta_index"],    # !FileCoercion
+      hiphase_override_mem_gb               = hiphase_override_mem_gb,
+      runtime_attributes                    = default_runtime_attributes
   }
 
   # hiphase.phased_vcfs[0] -> phased small variant VCF
@@ -132,14 +136,15 @@ workflow downstream {
 
   call Pbstarphase.pbstarphase_diplotype {
     input:
-      sample_id          = sample_id,
-      phased_vcf         = hiphase.phased_vcfs[0],
-      phased_vcf_index   = hiphase.phased_vcf_indices[0],
-      aligned_bam        = hiphase.haplotagged_bam,
-      aligned_bam_index  = hiphase.haplotagged_bam_index,
-      ref_fasta          = ref_map["fasta"],              # !FileCoercion
-      ref_index          = ref_map["fasta_index"],        # !FileCoercion
-      runtime_attributes = default_runtime_attributes
+      sample_id                             = sample_id,
+      phased_vcf                            = hiphase.phased_vcfs[0],
+      phased_vcf_index                      = hiphase.phased_vcf_indices[0],
+      aligned_bam                           = hiphase.haplotagged_bam,
+      aligned_bam_index                     = hiphase.haplotagged_bam_index,
+      ref_fasta                             = ref_map["fasta"],              # !FileCoercion
+      ref_index                             = ref_map["fasta_index"],        # !FileCoercion
+      pbstarphase_diplotype_override_mem_gb = pbstarphase_diplotype_override_mem_gb,
+      runtime_attributes                    = default_runtime_attributes
   }
 
   call Pharmcat.pharmcat {
