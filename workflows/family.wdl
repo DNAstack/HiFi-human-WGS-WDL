@@ -102,6 +102,11 @@ workflow humanwgs_family {
 
     Boolean preemptible = true
 
+    Int? pbmm2_align_wgs_override_mem_gb
+    Int? merge_bam_stats_override_mem_gb
+    Int? hiphase_override_mem_gb
+    Int? pbstarphase_diplotype_override_mem_gb
+
     String? debug_version
   }
 
@@ -123,15 +128,17 @@ workflow humanwgs_family {
     String sample_id = sample.sample_id
     call Upstream.upstream {
       input:
-        sample_id                    = sample.sample_id,
-        sex                          = sample.sex,
-        hifi_reads                   = sample.hifi_reads,
-        ref_map_file                 = ref_map_file,
-        deepvariant_version          = deepvariant_version,
-        custom_deepvariant_model_tar = custom_deepvariant_model_tar,
-        single_sample                = single_sample,
-        gpu                          = gpu,
-        default_runtime_attributes   = default_runtime_attributes
+        sample_id                       = sample.sample_id,
+        sex                             = sample.sex,
+        hifi_reads                      = sample.hifi_reads,
+        ref_map_file                    = ref_map_file,
+        deepvariant_version             = deepvariant_version,
+        custom_deepvariant_model_tar    = custom_deepvariant_model_tar,
+        single_sample                   = single_sample,
+        gpu                             = gpu,
+        pbmm2_align_wgs_override_mem_gb = pbmm2_align_wgs_override_mem_gb,
+        merge_bam_stats_override_mem_gb = merge_bam_stats_override_mem_gb,
+        default_runtime_attributes      = default_runtime_attributes
     }
   }
 
@@ -153,19 +160,21 @@ workflow humanwgs_family {
   scatter (sample_index in range(length(family.samples))) {
     call Downstream.downstream {
       input:
-        sample_id                  = sample_id[sample_index],
-        small_variant_vcf          = select_first([joint.split_joint_small_variant_vcfs, upstream.small_variant_vcf])[sample_index],
-        small_variant_vcf_index    = select_first([joint.split_joint_small_variant_vcf_indices, upstream.small_variant_vcf_index])[sample_index],
-        sv_vcf                     = select_first([joint.split_joint_structural_variant_vcfs, select_all(upstream.sv_vcf)])[sample_index],
-        sv_vcf_index               = select_first([joint.split_joint_structural_variant_vcf_indices, select_all(upstream.sv_vcf_index)])[sample_index],
-        trgt_vcf                   = upstream.trgt_vcf[sample_index],
-        trgt_vcf_index             = upstream.trgt_vcf_index[sample_index],
-        aligned_bam                = upstream.out_bam[sample_index],
-        aligned_bam_index          = upstream.out_bam_index[sample_index],
-        pharmcat_version           = pharmcat_version,
-        pharmcat_min_coverage      = pharmcat_min_coverage,
-        ref_map_file               = ref_map_file,
-        default_runtime_attributes = default_runtime_attributes
+        sample_id                             = sample_id[sample_index],
+        small_variant_vcf                     = select_first([joint.split_joint_small_variant_vcfs, upstream.small_variant_vcf])[sample_index],
+        small_variant_vcf_index               = select_first([joint.split_joint_small_variant_vcf_indices, upstream.small_variant_vcf_index])[sample_index],
+        sv_vcf                                = select_first([joint.split_joint_structural_variant_vcfs, select_all(upstream.sv_vcf)])[sample_index],
+        sv_vcf_index                          = select_first([joint.split_joint_structural_variant_vcf_indices, select_all(upstream.sv_vcf_index)])[sample_index],
+        trgt_vcf                              = upstream.trgt_vcf[sample_index],
+        trgt_vcf_index                        = upstream.trgt_vcf_index[sample_index],
+        aligned_bam                           = upstream.out_bam[sample_index],
+        aligned_bam_index                     = upstream.out_bam_index[sample_index],
+        pharmcat_version                      = pharmcat_version,
+        pharmcat_min_coverage                 = pharmcat_min_coverage,
+        ref_map_file                          = ref_map_file,
+        hiphase_override_mem_gb               = hiphase_override_mem_gb,
+        pbstarphase_diplotype_override_mem_gb = pbstarphase_diplotype_override_mem_gb,
+        default_runtime_attributes            = default_runtime_attributes
     }
   }
 

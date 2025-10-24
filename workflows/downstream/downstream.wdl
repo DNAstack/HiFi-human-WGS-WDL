@@ -49,6 +49,12 @@ workflow downstream {
     ref_map_file: {
       name: "Reference map file"
     }
+    hiphase_override_mem_gb: {
+      name: "hiphase memory allocation override"
+    }
+    pbstarphase_diplotype_override_mem_gb: {
+      name: "pbstarphase_diplotype memory allocation override"
+    }
     default_runtime_attributes: {
       name: "Default runtime attributes"
     }

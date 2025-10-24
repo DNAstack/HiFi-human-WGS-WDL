@@ -66,6 +66,7 @@ workflow humanwgs_singleton {
     preemptible: {
       name: "Where possible, run tasks preemptibly"
     }
+
     debug_version: {
       name: "Debug version for testing purposes"
     }
@@ -100,6 +101,11 @@ workflow humanwgs_singleton {
 
     Boolean preemptible = true
 
+    Int? pbmm2_align_wgs_override_mem_gb
+    Int? merge_bam_stats_override_mem_gb
+    Int? hiphase_override_mem_gb
+    Int? pbstarphase_diplotype_override_mem_gb
+
     String? debug_version
   }
 
@@ -115,32 +121,36 @@ workflow humanwgs_singleton {
 
   call Upstream.upstream {
     input:
-      sample_id                    = sample_id,
-      sex                          = sex,
-      hifi_reads                   = hifi_reads,
-      ref_map_file                 = ref_map_file,
-      deepvariant_version          = deepvariant_version,
-      custom_deepvariant_model_tar = custom_deepvariant_model_tar,
-      single_sample                = true,
-      gpu                          = gpu,
-      default_runtime_attributes   = default_runtime_attributes
+      sample_id                       = sample_id,
+      sex                             = sex,
+      hifi_reads                      = hifi_reads,
+      ref_map_file                    = ref_map_file,
+      deepvariant_version             = deepvariant_version,
+      custom_deepvariant_model_tar    = custom_deepvariant_model_tar,
+      single_sample                   = true,
+      gpu                             = gpu,
+      pbmm2_align_wgs_override_mem_gb = pbmm2_align_wgs_override_mem_gb,
+      merge_bam_stats_override_mem_gb = merge_bam_stats_override_mem_gb,
+      default_runtime_attributes      = default_runtime_attributes
   }
 
   call Downstream.downstream {
     input:
-      sample_id                  = sample_id,
-      small_variant_vcf          = upstream.small_variant_vcf,
-      small_variant_vcf_index    = upstream.small_variant_vcf_index,
-      sv_vcf                     = select_first([upstream.sv_vcf]),
-      sv_vcf_index               = select_first([upstream.sv_vcf_index]),
-      trgt_vcf                   = upstream.trgt_vcf,
-      trgt_vcf_index             = upstream.trgt_vcf_index,
-      aligned_bam                = upstream.out_bam,
-      aligned_bam_index          = upstream.out_bam_index,
-      pharmcat_version           = pharmcat_version,
-      pharmcat_min_coverage      = pharmcat_min_coverage,
-      ref_map_file               = ref_map_file,
-      default_runtime_attributes = default_runtime_attributes
+      sample_id                             = sample_id,
+      small_variant_vcf                     = upstream.small_variant_vcf,
+      small_variant_vcf_index               = upstream.small_variant_vcf_index,
+      sv_vcf                                = select_first([upstream.sv_vcf]),
+      sv_vcf_index                          = select_first([upstream.sv_vcf_index]),
+      trgt_vcf                              = upstream.trgt_vcf,
+      trgt_vcf_index                        = upstream.trgt_vcf_index,
+      aligned_bam                           = upstream.out_bam,
+      aligned_bam_index                     = upstream.out_bam_index,
+      pharmcat_version                      = pharmcat_version,
+      pharmcat_min_coverage                 = pharmcat_min_coverage,
+      ref_map_file                          = ref_map_file,
+      hiphase_override_mem_gb               = hiphase_override_mem_gb,
+      pbstarphase_diplotype_override_mem_gb = pbstarphase_diplotype_override_mem_gb,
+      default_runtime_attributes            = default_runtime_attributes
   }
 
   Map[String, Array[String]] stats = {

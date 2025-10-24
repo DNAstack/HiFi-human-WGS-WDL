@@ -11,6 +11,8 @@
   "downstream.pharmcat_version": "String",
   "downstream.pharmcat_min_coverage": "Int",
   "downstream.ref_map_file": "File",
+  "downstream.hiphase_override_mem_gb": "Int? (optional)",
+  "downstream.pbstarphase_diplotype_override_mem_gb": "Int? (optional)",
   "downstream.default_runtime_attributes": {
     "max_retries": "Int",
     "container_registry": "String",

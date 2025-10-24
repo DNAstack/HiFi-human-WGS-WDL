@@ -44,6 +44,12 @@ workflow upstream {
     gpu: {
       name: "Use GPU for DeepVariant"
     }
+    pbmm2_align_wgs_override_mem_gb: {
+      name: "Memory allocation override for pbmm2"
+    }
+    merge_bam_stats_override_mem_gb: {
+      name: "Memory allocation override for merge_bam_stats"
+    }
     default_runtime_attributes: {
       name: "Runtime attribute structure"
     }

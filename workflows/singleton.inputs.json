@@ -18,5 +18,9 @@
   "humanwgs_singleton.container_registry": "String? (optional)",
   "humanwgs_singleton.container_namespace": "String? (optional)",
   "humanwgs_singleton.preemptible": "Boolean",
+  "humanwgs_singleton.pbmm2_align_wgs_override_mem_gb": "Int? (optional)",
+  "humanwgs_singleton.merge_bam_stats_override_mem_gb": "Int? (optional)",
+  "humanwgs_singleton.hiphase_override_mem_gb": "Int? (optional)",
+  "humanwgs_singleton.pbstarphase_diplotype_override_mem_gb": "Int? (optional)",
   "humanwgs_singleton.debug_version": "String? (optional)"
 }
