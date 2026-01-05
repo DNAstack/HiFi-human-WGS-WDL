@@ -121,7 +121,8 @@ workflow humanwgs_family {
     Int? merge_bam_stats_override_mem_gb
     Int? hiphase_override_mem_gb
     Int? pbstarphase_diplotype_override_mem_gb
-    Int? pbsv_discover_override_mem_gb String? debug_version
+    Int? pbsv_discover_override_mem_gb
+    String? debug_version
   }
 
   call BackendConfiguration.backend_configuration {
