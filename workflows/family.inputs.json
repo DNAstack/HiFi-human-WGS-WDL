@@ -34,5 +34,6 @@
   "humanwgs_family.merge_bam_stats_override_mem_gb": "Int? (optional)",
   "humanwgs_family.hiphase_override_mem_gb": "Int? (optional)",
   "humanwgs_family.pbstarphase_diplotype_override_mem_gb": "Int? (optional)",
+  "humanwgs_family.pbsv_discover_override_mem_gb": "Int? (optional)",
   "humanwgs_family.debug_version": "String? (optional)"
 }

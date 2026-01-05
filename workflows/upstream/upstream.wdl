@@ -50,6 +50,12 @@ workflow upstream {
     merge_bam_stats_override_mem_gb: {
       name: "Memory allocation override for merge_bam_stats"
     }
+    pbsv_discover_override_mem_gb: {
+      name: "Memory allocation override for pbsv_discover"
+    }
+    pbsv_call_mem_gb: {
+      name: "Memory allocation override for pbsv_call"
+    }
     default_runtime_attributes: {
       name: "Runtime attribute structure"
     }
@@ -71,6 +77,8 @@ workflow upstream {
 
     Int? pbmm2_align_wgs_override_mem_gb
     Int? merge_bam_stats_override_mem_gb
+    Int? pbsv_discover_override_mem_gb
+    Int? pbsv_call_mem_gb
 
     RuntimeAttributes default_runtime_attributes
   }
@@ -90,9 +98,10 @@ workflow upstream {
     }
     call Pbsv.pbsv_discover {
       input:
-        aligned_bam        = pbmm2_align.aligned_bam,
-        aligned_bam_index  = pbmm2_align.aligned_bam_index,
-        trf_bed            = ref_map["pbsv_tandem_repeat_bed"], # !FileCoercion
+        aligned_bam                   = pbmm2_align.aligned_bam,
+        aligned_bam_index             = pbmm2_align.aligned_bam_index,
+        trf_bed                       = ref_map["pbsv_tandem_repeat_bed"], # !FileCoercion
+        pbsv_discover_override_mem_gb = pbsv_discover_override_mem_gb,
         runtime_attributes = default_runtime_attributes
     }
   }
@@ -212,6 +221,7 @@ workflow upstream {
           ref_name           = ref_map["name"],
           shard_index        = shard_index,
           regions            = region_set,
+          mem_gb             = pbsv_call_mem_gb,
           runtime_attributes = default_runtime_attributes
       }
     }
