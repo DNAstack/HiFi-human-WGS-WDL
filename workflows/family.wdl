@@ -48,6 +48,21 @@ workflow humanwgs_family {
     pbsv_call_mem_gb: {
       name: "Override PBSV call memory request (GB)"
     }
+    pbmm2_align_wgs_override_mem_gb: {
+      name: "Override pbmm2_align memory allocation (GB)"
+    }
+    merge_bam_stats_override_mem_gb: {
+      name: "Override merge_bam_stats memory allocation (GB)"
+    }
+    hiphase_override_mem_gb: {
+      name: "Override hiphase memory allocation (GB)"
+    }
+    pbstarphase_diplotype_override_mem_gb: {
+      name: "Override pbstarphase_diplotype memory allocation (GB)"
+    }
+    pbsv_discover_override_mem_gb: {
+      name: "Override PBSV discover memory allocation (GB)"
+    }
     gpu: {
       name: "Use GPU when possible"
     }
@@ -106,7 +121,7 @@ workflow humanwgs_family {
     Int? merge_bam_stats_override_mem_gb
     Int? hiphase_override_mem_gb
     Int? pbstarphase_diplotype_override_mem_gb
-
+    Int? pbsv_discover_override_mem_gb
     String? debug_version
   }
 
@@ -136,8 +151,10 @@ workflow humanwgs_family {
         custom_deepvariant_model_tar    = custom_deepvariant_model_tar,
         single_sample                   = single_sample,
         gpu                             = gpu,
+        pbsv_call_mem_gb                = pbsv_call_mem_gb,
         pbmm2_align_wgs_override_mem_gb = pbmm2_align_wgs_override_mem_gb,
         merge_bam_stats_override_mem_gb = merge_bam_stats_override_mem_gb,
+        pbsv_discover_override_mem_gb   = pbsv_discover_override_mem_gb,
         default_runtime_attributes      = default_runtime_attributes
     }
   }

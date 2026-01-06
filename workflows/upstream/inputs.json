@@ -9,6 +9,8 @@
   "upstream.gpu": "Boolean",
   "upstream.pbmm2_align_wgs_override_mem_gb": "Int? (optional)",
   "upstream.merge_bam_stats_override_mem_gb": "Int? (optional)",
+  "upstream.pbsv_discover_override_mem_gb": "Int? (optional)",
+  "upstream.pbsv_call_mem_gb": "Int? (optional)",
   "upstream.default_runtime_attributes": {
     "max_retries": "Int",
     "container_registry": "String",

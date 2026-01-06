@@ -22,5 +22,7 @@
   "humanwgs_singleton.merge_bam_stats_override_mem_gb": "Int? (optional)",
   "humanwgs_singleton.hiphase_override_mem_gb": "Int? (optional)",
   "humanwgs_singleton.pbstarphase_diplotype_override_mem_gb": "Int? (optional)",
+  "humanwgs_singleton.pbsv_discover_override_mem_gb": "Int? (optional)",
+  "humanwgs_singleton.pbsv_call_mem_gb": "Int? (optional)",
   "humanwgs_singleton.debug_version": "String? (optional)"
 }
