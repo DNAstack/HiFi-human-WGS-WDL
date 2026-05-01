@@ -81,6 +81,10 @@ workflow humanwgs_singleton {
       name: "Container registry where workflow images are hosted. If left blank, PacBio's public Quay.io registry will be used. Must be set if backend is set to 'AWS-HealthOmics'",
       default: "quay.io/pacbio"
     }
+    cpu_platform: {
+      help: "Optionally specify a specific cpu_platform to use; GCP only. Cascade and Sky Lake are n2 machines; the rest are n1.",
+      choices: ["Intel Ice Lake", "Intel Cascade Lake", "Intel Skylake", "Intel Broadwell", "Intel Haswell", "Intel Ivy Bridge", "Intel Sandy Bridge"]
+    }
     preemptible: {
       name: "Where possible, run tasks preemptibly"
     }
@@ -116,6 +120,7 @@ workflow humanwgs_singleton {
     String? zones
     String? gpuType
     String? container_registry
+    String? cpu_platform
 
     Boolean preemptible = true
     
@@ -135,7 +140,8 @@ workflow humanwgs_singleton {
       backend            = backend,
       zones              = zones,
       gpuType            = gpuType,
-      container_registry = container_registry
+      container_registry = container_registry,
+      cpu_platform       = cpu_platform
   }
 
   RuntimeAttributes default_runtime_attributes = if preemptible then backend_configuration.spot_runtime_attributes else backend_configuration.on_demand_runtime_attributes
