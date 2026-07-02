@@ -1,6 +1,7 @@
 [submodule "workflows/wdl-common"]
 	path = workflows/wdl-common
 	url = git@github.com:DNAstack/wdl-common.git
+	branch = v2.1.1
 [submodule "wiki"]
 	path = wiki
 	url = ../HiFi-human-WGS-WDL.wiki
