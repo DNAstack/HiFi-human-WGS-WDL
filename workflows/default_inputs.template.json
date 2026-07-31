@@ -1,0 +1,4 @@
+{
+  "HumanWGS_wrapper.ref_map_file": "${REFERENCE_BASE}/dataset/map_files/GRCh38.ref_map.v2p0p0.${BACKEND_SUFFIX}.tsv",
+  "HumanWGS_wrapper.preemptible": true
+}
