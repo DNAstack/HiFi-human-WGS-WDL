@@ -137,11 +137,12 @@ workflow humanwgs_singleton {
 
   call BackendConfiguration.backend_configuration {
     input:
-      backend            = backend,
-      zones              = zones,
-      gpuType            = gpuType,
-      container_registry = container_registry,
-      cpu_platform       = cpu_platform
+      backend                    = backend,
+      zones                      = zones,
+      gpuType                    = gpuType,
+      container_registry         = container_registry,
+      default_container_registry = "quay.io/pacbio",
+      cpu_platform               = cpu_platform
   }
 
   RuntimeAttributes default_runtime_attributes = if preemptible then backend_configuration.spot_runtime_attributes else backend_configuration.on_demand_runtime_attributes
