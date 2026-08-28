@@ -36,6 +36,7 @@ workflow HumanWGS_wrapper {
         Int? hiphase_override_mem_gb
         Int? pbstarphase_diplotype_override_mem_gb
         Int? pbsv_discover_override_mem_gb
+        Int? deepvariant_postprocess_variants_override_mem_gb
         String? debug_version
 
         # Wrapper workflow inputs
@@ -81,6 +82,7 @@ workflow HumanWGS_wrapper {
             hiphase_override_mem_gb = hiphase_override_mem_gb,
             pbstarphase_diplotype_override_mem_gb = pbstarphase_diplotype_override_mem_gb,
             pbsv_discover_override_mem_gb = pbsv_discover_override_mem_gb,
+            deepvariant_postprocess_variants_override_mem_gb = deepvariant_postprocess_variants_override_mem_gb,
             debug_version = debug_version
     }
 
