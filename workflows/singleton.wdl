@@ -64,6 +64,9 @@ workflow humanwgs_singleton {
     pbsv_discover_override_mem_gb: {
       name: "Override PBSV discover memory allocation (GB)"
     }
+    deepvariant_postprocess_variants_override_mem_gb: {
+      name: "DeepVariant postprocess variants override mem (GB)"
+    }
     gpu: {
       name: "Use GPU when possible"
     }
@@ -123,7 +126,7 @@ workflow humanwgs_singleton {
     String? cpu_platform
 
     Boolean preemptible = true
-    
+
     Int? pbsv_call_mem_gb
 
     Int? pbmm2_align_wgs_override_mem_gb
@@ -131,6 +134,7 @@ workflow humanwgs_singleton {
     Int? hiphase_override_mem_gb
     Int? pbstarphase_diplotype_override_mem_gb
     Int? pbsv_discover_override_mem_gb
+    Int? deepvariant_postprocess_variants_override_mem_gb
 
     String? debug_version
   }
@@ -161,6 +165,7 @@ workflow humanwgs_singleton {
       pbmm2_align_wgs_override_mem_gb = pbmm2_align_wgs_override_mem_gb,
       merge_bam_stats_override_mem_gb = merge_bam_stats_override_mem_gb,
       pbsv_discover_override_mem_gb   = pbsv_discover_override_mem_gb,
+      deepvariant_postprocess_variants_override_mem_gb = deepvariant_postprocess_variants_override_mem_gb,
       default_runtime_attributes      = default_runtime_attributes
   }
 

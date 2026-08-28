@@ -56,6 +56,9 @@ workflow upstream {
     pbsv_call_mem_gb: {
       name: "Memory allocation override for pbsv_call"
     }
+    deepvariant_postprocess_variants_override_mem_gb: {
+      name: "DeepVariant postprocess variants override mem (GB)"
+    }
     default_runtime_attributes: {
       name: "Runtime attribute structure"
     }
@@ -79,6 +82,7 @@ workflow upstream {
     Int? merge_bam_stats_override_mem_gb
     Int? pbsv_discover_override_mem_gb
     Int? pbsv_call_mem_gb
+    Int? deepvariant_postprocess_variants_override_mem_gb
 
     RuntimeAttributes default_runtime_attributes
   }
@@ -146,6 +150,7 @@ workflow upstream {
       ref_fasta                    = ref_map["fasta"],             # !FileCoercion
       ref_index                    = ref_map["fasta_index"],       # !FileCoercion
       ref_name                     = ref_map["name"],
+      deepvariant_postprocess_variants_override_mem_gb = deepvariant_postprocess_variants_override_mem_gb,
       deepvariant_version          = deepvariant_version,
       custom_deepvariant_model_tar = custom_deepvariant_model_tar,
       gpu                          = gpu,
