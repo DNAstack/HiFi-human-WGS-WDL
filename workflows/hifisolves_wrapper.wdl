@@ -137,8 +137,8 @@ workflow HumanWGS_wrapper {
     Array[String] output_trgt_coverage_dropouts = humanwgs_family.trgt_coverage_dropouts # !StringCoercion
 
     # paraphase outputs
-    Array[String] output_paraphase_output_json = humanwgs_family.paraphase_output_json # !StringCoercion
-    Array[String] output_paraphase_realigned_bam = humanwgs_family.paraphase_realigned_bam # !StringCoercion
+    Array[String] output_paraphase_output_json = select_all(humanwgs_family.paraphase_output_json) # !StringCoercion
+    Array[String] output_paraphase_realigned_bam = select_all(humanwgs_family.paraphase_realigned_bam) # !StringCoercion
     Array[String] output_paraphase_vcfs = select_all(humanwgs_family.paraphase_vcfs) # !StringCoercion
 
     # per sample cnv outputs
@@ -235,7 +235,7 @@ workflow HumanWGS_wrapper {
     Array[String] output_small_variant_gvcf_index = humanwgs_family.small_variant_gvcf_index # !StringCoercion
     Array[String] output_phased_trgt_vcf_index = humanwgs_family.phased_trgt_vcf_index # !StringCoercion
     Array[String] output_trgt_spanning_reads_index = humanwgs_family.trgt_spanning_reads_index # !StringCoercion
-    Array[String] output_paraphase_realigned_bam_index = humanwgs_family.paraphase_realigned_bam_index # !StringCoercion
+    Array[String] output_paraphase_realigned_bam_index = select_all(humanwgs_family.paraphase_realigned_bam_index) # !StringCoercion
     Array[String] output_cnv_vcf_index = humanwgs_family.cnv_vcf_index # !StringCoercion
     Array[String] output_joint_small_variants_vcf_index = select_all([humanwgs_family.joint_small_variants_vcf_index]) # !StringCoercion
     Array[String] output_joint_sv_vcf_index = select_all([humanwgs_family.joint_sv_vcf_index]) # !StringCoercion
