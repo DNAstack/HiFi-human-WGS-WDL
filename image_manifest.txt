@@ -1,9 +1,9 @@
 dnastack/hifi_solves_tools:2.1.0
 dnastack/hifi_solves_tools:2.1.1
-dnastack/hifi_solves_tools:2.1.2
+us-central1-docker.pkg.dev/workflow-resources/workflow-images/hifi_solves_tools:2.1.2
 dnastack/pbmm2_jasmine:1.16.99_2.4.0
 dnastack/pbmm2_jasmine:1.16.99_2.4.0_0.0.1
-dnastack/pbmm2_jasmine:1.16.99_2.4.0_0.0.2
+us-central1-docker.pkg.dev/workflow-resources/workflow-images/pbmm2_jasmine:1.16.99_2.4.0_0.0.2
 google/deepvariant:1.6.1
 google/deepvariant:1.6.1-gpu
 pgkb/pharmcat:2.15.4
