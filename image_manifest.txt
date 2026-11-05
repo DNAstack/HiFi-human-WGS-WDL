@@ -1,6 +1,6 @@
 dnastack/hifi_solves_tools:2.1.0@sha256:4e90e0720ef8098a108b17919232c3290c4014a13aa55b6a98c0f727ea9dff01
 dnastack/hifi_solves_tools:2.1.1@sha256:a1de46dc9a58215945dbbf75527513a057fcd2ec8988af740a25e4c8f2df1ce0
-us-central1-docker.pkg.dev/workflow-resources/workflow-images/hifi_solves_tools:2.1.2@sha256:c1b45d2cc42d589ef5ddd12c42551102898272448df1dd49c50446f3a3a700d9
+dnastack/hifi_solves_tools:2.1.2@sha256:738670e53a1293dd00aad6ef7d1a20a11ba3b7fae6b4f5721021891164897a71
 dnastack/pbmm2_jasmine:1.16.99_2.4.0@sha256:b04de98ae0ad832c6f0521903098ab7f2d2a162ccc48e6f2a76f00103d7848e1
 dnastack/pbmm2_jasmine:1.16.99_2.4.0_0.0.1@sha256:712c020e710f2bb6cd360815c12e6a078c558857861ce5fb26d8686d348fd8e9
 us-central1-docker.pkg.dev/workflow-resources/workflow-images/pbmm2_jasmine:1.16.99_2.4.0_0.0.2@sha256:6881bb9a57c24f87af8bfd9132d9cfaf9d02cb0970bb0c05b98b817d62e3bbd7
@@ -23,3 +23,4 @@ quay.io/pacbio/svpack@sha256:628e9851e425ed8044a907d33de04043d1ef02d4d2b2667cf2e
 quay.io/pacbio/trgt@sha256:be7e6ef589a31f4de5d2ed4725dfb34b4b23cb9a440577b606e8f7bfee06526b
 quay.io/pacbio/wgs_tertiary@sha256:410597030e0c85cf16eb27a877d260e7e2824747f5e8b05566a1aaa729d71136
 ubuntu:jammy@sha256:8a2321a92b438238f93b4346fff61bc4259c99fdd4d9b52ee86f153fee0c344f
+us-central1-docker.pkg.dev/workflow-resources/workflow-images/hifi_solves_tools:2.1.2@sha256:c1b45d2cc42d589ef5ddd12c42551102898272448df1dd49c50446f3a3a700d9
