@@ -1,3 +1,7 @@
 {
+  "HumanWGS_wrapper.workflow_outputs_bucket": "${FILE_OUTPUTS_BUCKET}",
+  "HumanWGS_wrapper.backend": "${WORKFLOW_BACKEND}",
+  "HumanWGS_wrapper.zones": "${ZONES}",
+  "HumanWGS_wrapper.container_registry": "${CONTAINER_REGISTRY}",
   "HumanWGS_wrapper.ref_map_file": "${REFERENCE_BASE}/dataset/map_files/GRCh38.ref_map.v2p0p0.${BACKEND_SUFFIX}.tsv"
 }
