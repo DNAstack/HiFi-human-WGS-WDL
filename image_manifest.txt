@@ -1,6 +1,6 @@
 dnastack/hifi_solves_tools:2.1.0@sha256:4e90e0720ef8098a108b17919232c3290c4014a13aa55b6a98c0f727ea9dff01
 dnastack/hifi_solves_tools:2.1.1@sha256:a1de46dc9a58215945dbbf75527513a057fcd2ec8988af740a25e4c8f2df1ce0
-dnastack/hifi_solves_tools:2.1.2@sha256:738670e53a1293dd00aad6ef7d1a20a11ba3b7fae6b4f5721021891164897a71
+dnastack/hifi_solves_tools:2.1.2@sha256:c1b45d2cc42d589ef5ddd12c42551102898272448df1dd49c50446f3a3a700d9
 dnastack/pbmm2_jasmine:1.16.99_2.4.0@sha256:b04de98ae0ad832c6f0521903098ab7f2d2a162ccc48e6f2a76f00103d7848e1
 dnastack/pbmm2_jasmine:1.16.99_2.4.0_0.0.1@sha256:712c020e710f2bb6cd360815c12e6a078c558857861ce5fb26d8686d348fd8e9
 us-central1-docker.pkg.dev/workflow-resources/workflow-images/pbmm2_jasmine:1.16.99_2.4.0_0.0.2@sha256:6881bb9a57c24f87af8bfd9132d9cfaf9d02cb0970bb0c05b98b817d62e3bbd7
