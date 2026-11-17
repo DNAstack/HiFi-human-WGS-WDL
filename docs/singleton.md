@@ -92,10 +92,13 @@ flowchart TD
 | String | sample_id | Unique identifier for the sample | Alphanumeric characters, periods, dashes, and underscores are allowed. |
 | Array\[File\] | hifi_reads | Array of paths to hifi_reads in unaligned BAM format. | |
 | Array\[File\]? | fail_reads | Array of paths to fail_reads in unaligned BAM format (optional) | If provided, these reads will be aligned to the bait-captured regions. |
+| File? | aligned_bam | Coordinate-sorted BAM already aligned to the reference (optional) | Required when `skip_alignment` is `true`; used instead of `hifi_reads`. Every `@RG SM` must equal `sample_id`. |
+| File? | aligned_bam_index | Index for `aligned_bam` (optional) | Required when `skip_alignment` is `true`. |
 | String | ref_name | Reference genome to use for this workflow run<br/><br/>`["GRCh38", "GRCh38_GIABv3"]`<br/><br/>Default: `"GRCh38"` | |
 | File? | trgt_tandem_repeat_bed_override | Optional BED file to override the default TRGT tandem repeat catalog | |
 | File? | methbat_region_tsv_override | Optional TSV file to override the default MethBat methylation profiling regions | |
 | Boolean | use_alignment_chunking | Whether to chunk BAM files for alignment. If false, all reads will be aligned in a single chunk.<br/><br/>Default: `true` | |
+| Boolean | skip_alignment | Use pre-aligned BAMs instead of aligning `hifi_reads` with pbmm2.<br/><br/>Default: `false` | When `true`, the `aligned_bam` and `aligned_bam_index` are used and pbmm2 is not run (`hifi_reads` may be empty). The BAM must be coordinate-sorted and indexed, and every `@RG SM` must equal the sample ID; a check stops the workflow before variant calling otherwise. Intended for reads placed on the reference by other means, such as [Portello](https://github.com/PacificBiosciences/portello) liftover through a de novo assembly. |
 | Boolean | use_gpu | Use GPU when possible<br/><br/>Default: `false` | [GPU support](./gpu.md#gpu-support) |
 | Boolean | use_parabricks_deepvariant | Use Parabricks DeepVariant implementation<br/><br/>Default: `false` | If both `use_parabricks_deepvariant` and `use_gpu` are set to `true`, Parabricks DeepVariant will be used instead of standard DeepVariant.<br/><br/>[Parabricks DeepVariant](./parabricks.md#parabricks-deepvariant-subworkflow) |
 | String | backend | Backend where the workflow will be executed<br/><br/>`["GCP", "Azure", "AWS-HealthOmics", "HPC"]` | |

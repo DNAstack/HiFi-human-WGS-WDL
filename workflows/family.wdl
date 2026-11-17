@@ -571,6 +571,10 @@ workflow humanwgs_family {
       name: "Use alignment chunking",
       description: "Whether to chunk BAM files for alignment. If false, all reads will be aligned in a single chunk."
     }
+    skip_alignment: {
+      name: "Skip alignment",
+      description: "Use each sample's pre-aligned BAM (aligned_bam / aligned_bam_index) instead of aligning hifi_reads with pbmm2. The BAM must be coordinate-sorted and indexed, and every @RG SM must equal the sample ID; the workflow stops before variant calling otherwise."
+    }
     glnexus_mem_gb: {
       name: "GLnexus memory override",
       description: "Override GLnexus memory request (GB)",
@@ -641,6 +645,7 @@ workflow humanwgs_family {
     File? trgt_tandem_repeat_bed_override
     File? methbat_region_tsv_override
     Boolean use_alignment_chunking = true
+    Boolean skip_alignment = false
     Int glnexus_mem_gb = 60
     Boolean use_gpu = false
     Boolean use_parabricks_deepvariant = false
@@ -725,6 +730,9 @@ workflow humanwgs_family {
       sawfish_expected_bed_male = sawfish_expected_bed_male,
       sawfish_expected_bed_female = sawfish_expected_bed_female,
       use_alignment_chunking = use_alignment_chunking,
+      skip_alignment = skip_alignment,
+      prealigned_bam = sample.aligned_bam,
+      prealigned_bam_index = sample.aligned_bam_index,
       single_sample = single_sample,
       use_gpu = use_gpu,
       use_parabricks_deepvariant = use_parabricks_deepvariant,

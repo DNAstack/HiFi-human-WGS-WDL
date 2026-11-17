@@ -196,6 +196,15 @@ workflow upstream {
     use_alignment_chunking: {
       description: "Whether to chunk BAM files for alignment. If false, all reads will be aligned in a single chunk."
     }
+    skip_alignment: {
+      description: "Use prealigned_bam instead of aligning hifi_reads with pbmm2"
+    }
+    prealigned_bam: {
+      description: "Coordinate-sorted BAM already aligned to the reference; required when skip_alignment is true. Every @RG SM must equal sample_id."
+    }
+    prealigned_bam_index: {
+      description: "Index for prealigned_bam; required when skip_alignment is true"
+    }
     single_sample: {
       description: "Single sample workflow",
       group: "Common"
@@ -227,40 +236,70 @@ workflow upstream {
     File sawfish_expected_bed_male
     File sawfish_expected_bed_female
     Boolean use_alignment_chunking
+    Boolean skip_alignment = false
+    File? prealigned_bam
+    File? prealigned_bam_index
     Boolean single_sample = false
     Boolean use_gpu
     Boolean use_parabricks_deepvariant
     RuntimeAttributes default_runtime_attributes
   }
 
-  scatter (hifi_read_bam in hifi_reads) {
-    call Pbmm2.pbmm2 as pbmm2 { input:
-      sample_id = sample_id,
-      bam = hifi_read_bam,
-      use_alignment_chunking = use_alignment_chunking,
-      ref_fasta = ref_fasta,
-      ref_name = ref_name,
-      default_runtime_attributes = default_runtime_attributes
+  if (!skip_alignment) {
+    scatter (hifi_read_bam in hifi_reads) {
+      call Pbmm2.pbmm2 as pbmm2 { input:
+        sample_id = sample_id,
+        bam = hifi_read_bam,
+        use_alignment_chunking = use_alignment_chunking,
+        ref_fasta = ref_fasta,
+        ref_name = ref_name,
+        default_runtime_attributes = default_runtime_attributes
+      }
     }
+
+    # merge aligned bams if there are multiple
+    if (length(flatten(pbmm2.aligned_bams)) > 1) {
+      call Pbsamoa.pbsamoa_merge as merge_hifi_reads { input:
+        bams = flatten(pbmm2.aligned_bams),
+        out_prefix = "~{sample_id}.~{ref_name}.hifi_reads",
+        runtime_attributes = default_runtime_attributes
+      }
+    }
+
+    # select the merged bam if it exists, otherwise select the first (only) aligned bam
+    File pbmm2_aligned_bam = select_first([
+      merge_hifi_reads.merged_bam,
+      flatten(pbmm2.aligned_bams)[0]
+    ])
+    File pbmm2_aligned_bam_index = select_first([
+      merge_hifi_reads.merged_bam_index,
+      flatten(pbmm2.aligned_bam_indices)[0]
+    ])
+    Array[String] pbmm2_msg = flatten(pbmm2.msg)
   }
 
-  # merge aligned bams if there are multiple
-  if (length(flatten(pbmm2.aligned_bams)) > 1) {
-    call Pbsamoa.pbsamoa_merge as merge_hifi_reads { input:
-      bams = flatten(pbmm2.aligned_bams),
-      out_prefix = "~{sample_id}.~{ref_name}.hifi_reads",
+  if (skip_alignment) {
+    call check_bam_sample_name { input:
+      sample_id = sample_id,
+      aligned_bam = select_first([prealigned_bam]),
       runtime_attributes = default_runtime_attributes
     }
+
+    # Gate the pre-aligned BAM on the check, so no caller starts on a BAM with the wrong sample name
+    if (check_bam_sample_name.sample_name_matches) {
+      File checked_prealigned_bam = select_first([prealigned_bam])
+      File checked_prealigned_bam_index = select_first([prealigned_bam_index])
+    }
+    Array[String] skip_alignment_msg = ["Alignment skipped: using the pre-aligned BAM provided for ~{sample_id}."]
   }
 
-  # select the merged bam if it exists, otherwise select the first (only) aligned bam
   File aligned_bam_data = select_first([
-    merge_hifi_reads.merged_bam,
-    flatten(pbmm2.aligned_bams)[0]
+    pbmm2_aligned_bam,
+    checked_prealigned_bam
   ])
   File aligned_bam_index = select_first([
-    merge_hifi_reads.merged_bam_index,
-    flatten(pbmm2.aligned_bam_indices)[0]
+    pbmm2_aligned_bam_index,
+    checked_prealigned_bam_index
   ])
 
   call Mosdepth.mosdepth { input:
@@ -540,7 +579,7 @@ workflow upstream {
 
     # qc messages
     Array[String] msg = flatten([
-      flatten(pbmm2.msg),
+      select_first([pbmm2_msg, skip_alignment_msg]),
       [
         include_fail_reads
       ],
@@ -551,3 +590,84 @@ workflow upstream {
   }
 }
 
+
+task check_bam_sample_name {
+  meta {
+    description: "Check that a pre-aligned BAM has @RG header lines and that every @RG SM equals the sample ID. DeepVariant and sawfish take the sample name from the BAM, and HiPhase requires it to match sample_id."
+  }
+
+  parameter_meta {
+    sample_id: {
+      name: "Sample ID"
+    }
+    aligned_bam: {
+      name: "Pre-aligned BAM"
+    }
+    runtime_attributes: {
+      name: "Runtime attribute structure"
+    }
+    sample_name_matches: {
+      name: "True when every @RG SM equals sample_id (the task fails otherwise)"
+    }
+  }
+
+  input {
+    String sample_id
+    File aligned_bam
+
+    RuntimeAttributes runtime_attributes
+  }
+
+  Int threads = 2
+  Int mem_gb = 4
+  Int disk_size = ceil(size(aligned_bam, "GB") + 20)
+
+  command <<<
+    set -euo pipefail
+
+    samtools --version
+
+    samtools view -H "~{aligned_bam}" | grep '^@RG' > read_groups.txt || true
+
+    if [[ ! -s read_groups.txt ]]; then
+      echo "ERROR: ~{basename(aligned_bam)} has no @RG header lines; add one with SM:~{sample_id}" >&2
+      exit 1
+    fi
+
+    # Print the ID and SM of every read group whose SM is missing or differs from the sample ID
+    awk -F '\t' -v sample_id="~{sample_id}" '
+      {
+        id = ""; sm = ""
+        for (i = 2; i <= NF; i++) {
+          if ($i ~ /^ID:/) id = substr($i, 4)
+          if ($i ~ /^SM:/) sm = substr($i, 4)
+        }
+        if (sm != sample_id) print "ID:" id "\tSM:" sm
+      }
+    ' read_groups.txt > mismatched_read_groups.txt
+
+    if [[ -s mismatched_read_groups.txt ]]; then
+      echo "ERROR: @RG SM in ~{basename(aligned_bam)} must equal the sample ID (~{sample_id}). Mismatched read groups:" >&2
+      cat mismatched_read_groups.txt >&2
+      exit 1
+    fi
+
+    echo "All $(wc -l < read_groups.txt) read groups have SM:~{sample_id}"
+  >>>
+
+  output {
+    Boolean sample_name_matches = true
+  }
+
+  runtime {
+    docker: "~{runtime_attributes.container_registry}/pb_wdl_base@sha256:03cb3c01937eccc907f8ad71c87b258581504572205fe3f31a657e318f3564ae"  # pb_wdl_base:build4
+    cpu: threads
+    memory: "~{mem_gb} GiB"
+    disk: "~{disk_size} GB"
+    disks: "local-disk ~{disk_size} HDD"
+    preemptible: runtime_attributes.preemptible_tries
+    maxRetries: runtime_attributes.max_retries
+    zones: runtime_attributes.zones
+    cpuPlatform: runtime_attributes.cpuPlatform
+  }
+}

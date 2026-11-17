@@ -546,6 +546,18 @@ workflow humanwgs_singleton {
       name: "Use alignment chunking",
       description: "Whether to chunk BAM files for alignment. If false, all reads will be aligned in a single chunk."
     }
+    aligned_bam: {
+      name: "Pre-aligned BAM",
+      description: "Coordinate-sorted BAM already aligned to the reference; used instead of hifi_reads when skip_alignment is true"
+    }
+    aligned_bam_index: {
+      name: "Pre-aligned BAM index",
+      description: "Index for aligned_bam"
+    }
+    skip_alignment: {
+      name: "Skip alignment",
+      description: "Use the pre-aligned BAM (aligned_bam / aligned_bam_index) instead of aligning hifi_reads with pbmm2. The BAM must be coordinate-sorted and indexed, and every @RG SM must equal the sample ID; the workflow stops before variant calling otherwise."
+    }
     use_gpu: {
       name: "Use GPU",
       description: "Use GPU when possible",
@@ -621,6 +633,9 @@ workflow humanwgs_singleton {
     File? trgt_tandem_repeat_bed_override
     File? methbat_region_tsv_override
     Boolean use_alignment_chunking = true
+    File? aligned_bam
+    File? aligned_bam_index
+    Boolean skip_alignment = false
     Boolean use_gpu = false
     Boolean use_parabricks_deepvariant = false
 
@@ -699,6 +714,9 @@ workflow humanwgs_singleton {
     sawfish_expected_bed_male = sawfish_expected_bed_male,
     sawfish_expected_bed_female = sawfish_expected_bed_female,
     use_alignment_chunking = use_alignment_chunking,
+    skip_alignment = skip_alignment,
+    prealigned_bam = aligned_bam,
+    prealigned_bam_index = aligned_bam_index,
     single_sample = true,
     use_gpu = use_gpu,
     use_parabricks_deepvariant = use_parabricks_deepvariant,
