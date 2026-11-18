@@ -281,7 +281,8 @@ workflow upstream {
   if (skip_alignment) {
     call check_bam_sample_name { input:
       sample_id = sample_id,
-      aligned_bam = select_first([prealigned_bam]),
+      aligned_bam = prealigned_bam,
+      aligned_bam_index = prealigned_bam_index,
       runtime_attributes = default_runtime_attributes
     }
 
@@ -593,7 +594,7 @@ workflow upstream {
 
 task check_bam_sample_name {
   meta {
-    description: "Check that a pre-aligned BAM has @RG header lines and that every @RG SM equals the sample ID. DeepVariant and sawfish take the sample name from the BAM, and HiPhase requires it to match sample_id."
+    description: "Check that a pre-aligned BAM and its index were provided, that the BAM has @RG header lines and that every @RG SM equals the sample ID. DeepVariant and sawfish take the sample name from the BAM, and HiPhase requires it to match sample_id."
   }
 
   parameter_meta {
@@ -601,7 +602,10 @@ task check_bam_sample_name {
       name: "Sample ID"
     }
     aligned_bam: {
-      name: "Pre-aligned BAM"
+      name: "Pre-aligned BAM (optional so that a missing BAM fails here with a clear message)"
+    }
+    aligned_bam_index: {
+      name: "Pre-aligned BAM index (optional so that a missing index fails here with a clear message)"
     }
     runtime_attributes: {
       name: "Runtime attribute structure"
@@ -613,24 +617,35 @@ task check_bam_sample_name {
 
   input {
     String sample_id
-    File aligned_bam
+    File? aligned_bam
+    File? aligned_bam_index
 
     RuntimeAttributes runtime_attributes
   }
 
   Int threads = 2
   Int mem_gb = 4
-  Int disk_size = ceil(size(aligned_bam, "GB") + 20)
+  Int disk_size = ceil(size(aligned_bam, "GB") * 2 + 20)
 
   command <<<
     set -euo pipefail
+
+    if [[ -z "~{aligned_bam}" ]]; then
+      echo "ERROR: skip_alignment is true but no aligned_bam was provided for sample ~{sample_id}" >&2
+      exit 1
+    fi
+    if [[ -z "~{aligned_bam_index}" ]]; then
+      echo "ERROR: skip_alignment is true but no aligned_bam_index was provided for sample ~{sample_id}" >&2
+      exit 1
+    fi
+    bam_name=$(basename "~{aligned_bam}")
 
     samtools --version
 
     samtools view -H "~{aligned_bam}" | grep '^@RG' > read_groups.txt || true
 
     if [[ ! -s read_groups.txt ]]; then
-      echo "ERROR: ~{basename(aligned_bam)} has no @RG header lines; add one with SM:~{sample_id}" >&2
+      echo "ERROR: ${bam_name} has no @RG header lines; add one with SM:~{sample_id}" >&2
       exit 1
     fi
 
@@ -647,7 +662,7 @@ task check_bam_sample_name {
     ' read_groups.txt > mismatched_read_groups.txt
 
     if [[ -s mismatched_read_groups.txt ]]; then
-      echo "ERROR: @RG SM in ~{basename(aligned_bam)} must equal the sample ID (~{sample_id}). Mismatched read groups:" >&2
+      echo "ERROR: @RG SM in ${bam_name} must equal the sample ID (~{sample_id}). Mismatched read groups:" >&2
       cat mismatched_read_groups.txt >&2
       exit 1
     fi
@@ -664,7 +679,7 @@ task check_bam_sample_name {
     cpu: threads
     memory: "~{mem_gb} GiB"
     disk: "~{disk_size} GB"
-    disks: "local-disk ~{disk_size} HDD"
+    disks: "local-disk ~{disk_size} SSD"
     preemptible: runtime_attributes.preemptible_tries
     maxRetries: runtime_attributes.max_retries
     zones: runtime_attributes.zones
