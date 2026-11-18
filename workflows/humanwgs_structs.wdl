@@ -9,6 +9,12 @@ struct Sample {
   Array[File] hifi_reads
   ## Array of paths to fail_reads in unaligned BAM format
   Array[File]? fail_reads
+
+  ## Coordinate-sorted BAM already aligned to the reference, used instead of
+  ## aligning hifi_reads when skip_alignment is true. Its @RG SM must equal sample_id.
+  File? aligned_bam
+  ## Index for aligned_bam
+  File? aligned_bam_index
 }
 
 ## The `Family` struct contains the samples for the family.

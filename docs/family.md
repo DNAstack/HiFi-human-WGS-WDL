@@ -119,6 +119,7 @@ flowchart TD
 | Boolean | use_alignment_chunking | Whether to chunk BAM files for alignment. If false, all reads will be aligned in a single chunk.<br/><br/>Default: `true` | |
 | Int | pbsamoa_merge_mem_gb | pbsamoa merge memory<br/><br/>Default: `32` | |
 | Int | sawfish_call_mem_gb | Sawfish call memory<br/><br/>Default: `32` | |
+| Boolean | skip_alignment | Use pre-aligned BAMs instead of aligning `hifi_reads` with pbmm2.<br/><br/>Default: `false` | When `true`, each sample's `aligned_bam` and `aligned_bam_index` are used and pbmm2 is not run (`hifi_reads` may be empty). The BAM must be coordinate-sorted and indexed, and every `@RG SM` must equal the sample ID; a check stops the workflow before variant calling otherwise. Intended for reads placed on the reference by other means, such as [Portello](https://github.com/PacificBiosciences/portello) liftover through a de novo assembly. |
 | Int | glnexus_mem_gb | GLnexus memory<br/><br/>Default: `60` | |
 | Boolean | use_gpu | Use GPU when possible<br/><br/>Default: `false` | [GPU support](./gpu.md#gpu-support) |
 | Boolean | use_parabricks_deepvariant | Use Parabricks DeepVariant implementation<br/><br/>Default: `false` | If both `use_parabricks_deepvariant` and `use_gpu` are set to `true`, Parabricks DeepVariant will be used instead of standard DeepVariant.<br/><br/>[Parabricks DeepVariant](./parabricks.md#parabricks-deepvariant-subworkflow) |
@@ -149,6 +150,8 @@ The `Sample` struct contains sample specific data and metadata. The struct has t
 | String | sample_id | Unique identifier for the sample | Alphanumeric characters, periods, dashes, and underscores are allowed. |
 | Array\[File\] | hifi_reads | Array of paths to hifi_reads in unaligned BAM format. | |
 | Array\[File\]? | fail_reads | Array of paths to fail_reads in unaligned BAM format (optional) | If provided, these reads will be aligned to the bait-captured regions. |
+| File? | aligned_bam | Coordinate-sorted BAM already aligned to the reference (optional) | Required when `skip_alignment` is `true`; used instead of `hifi_reads`. Every `@RG SM` must equal `sample_id`. |
+| File? | aligned_bam_index | Index for `aligned_bam` (optional) | Required when `skip_alignment` is `true`. |
 
 ## Outputs
 
