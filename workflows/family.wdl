@@ -583,6 +583,10 @@ workflow humanwgs_family {
       description: "Override Sawfish call memory request (GB)",
       group: "Resource"
     }
+    skip_alignment: {
+      name: "Skip alignment",
+      description: "Use each sample's pre-aligned BAM (aligned_bam / aligned_bam_index) instead of aligning hifi_reads with pbmm2. The BAM must be coordinate-sorted and indexed, and every @RG SM must equal the sample ID; the workflow stops before variant calling otherwise."
+    }
     glnexus_mem_gb: {
       name: "GLnexus memory override",
       description: "Override GLnexus memory request (GB)",
@@ -659,6 +663,7 @@ workflow humanwgs_family {
     Boolean use_alignment_chunking = true
     Int pbsamoa_merge_mem_gb = 32
     Int sawfish_call_mem_gb = 32
+    Boolean skip_alignment = false
     Int glnexus_mem_gb = 60
     Boolean use_gpu = false
     Boolean use_parabricks_deepvariant = false
@@ -737,6 +742,9 @@ workflow humanwgs_family {
       sawfish_expected_bed_female = sawfish_expected_bed_female,
       use_alignment_chunking = use_alignment_chunking,
       pbsamoa_merge_mem_gb = pbsamoa_merge_mem_gb,
+      skip_alignment = skip_alignment,
+      prealigned_bam = sample.aligned_bam,
+      prealigned_bam_index = sample.aligned_bam_index,
       single_sample = single_sample,
       use_gpu = use_gpu,
       use_parabricks_deepvariant = use_parabricks_deepvariant,
