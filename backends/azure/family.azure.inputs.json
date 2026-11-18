@@ -7,16 +7,9 @@
         "hifi_reads": [
           "File"
         ],
-        "affected": "Boolean",
-        "sex": "String? (optional, ['MALE', 'FEMALE', null])",
-        "father_id": "String? (optional)",
-        "mother_id": "String? (optional)"
+        "fail_reads": "Array[File]? (optional)"
       }
     ]
   },
-  "humanwgs_family.phenotypes": "String? (optional)",
-  "humanwgs_family.ref_map_file": "https://datasetpbrarediseases.blob.core.windows.net/dataset/hifi-wdl-resources-v3.0.0/GRCh38.ref_map.v3p0p0.azure.tsv",
-  "humanwgs_family.tertiary_map_file": "https://datasetpbrarediseases.blob.core.windows.net/dataset/hifi-wdl-resources-v3.0.0/GRCh38.tertiary_map.v3p0p0.azure.tsv",
-  "humanwgs_family.backend": "Azure",
-  "humanwgs_family.preemptible": "Boolean"
+  "humanwgs_family.backend": "Azure"
 }

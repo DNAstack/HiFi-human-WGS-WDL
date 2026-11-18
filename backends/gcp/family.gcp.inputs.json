@@ -7,17 +7,10 @@
         "hifi_reads": [
           "File"
         ],
-        "affected": "Boolean",
-        "sex": "String? (optional, ['MALE', 'FEMALE', null])",
-        "father_id": "String? (optional)",
-        "mother_id": "String? (optional)"
+        "fail_reads": "Array[File]? (optional)"
       }
     ]
   },
-  "humanwgs_family.phenotypes": "String? (optional)",
-  "humanwgs_family.ref_map_file": "gs://pacbio-wdl/hifi-wdl-resources-v3.0.0/GRCh38.ref_map.v3p0p0.gcp.tsv",
-  "humanwgs_family.tertiary_map_file": "gs://pacbio-wdl/hifi-wdl-resources-v3.0.0/GRCh38.tertiary_map.v3p0p0.gcp.tsv",
-  "humanwgs_family.backend": "GCP",
-  "humanwgs_family.zones": "String",
-  "humanwgs_family.preemptible": "Boolean"
+  "humanwgs_family.backend": "GCP-Batch",
+  "humanwgs_family.zones": "String"
 }
