@@ -279,6 +279,7 @@ workflow HumanWGS_wrapper {
             workflow_version = workflow_version,
             output_bucket = workflow_outputs_bucket,
             backend = backend,
+            path_style = "timestamp_first",
             runtime_attributes = default_runtime_attributes
     }
 
@@ -291,6 +292,7 @@ workflow HumanWGS_wrapper {
             workflow_version = workflow_version,
             output_bucket = workflow_outputs_bucket,
             backend = backend,
+            path_style = "timestamp_first",
             runtime_attributes = default_runtime_attributes
     }
 
